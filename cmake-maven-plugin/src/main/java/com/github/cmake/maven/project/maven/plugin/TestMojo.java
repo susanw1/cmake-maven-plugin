@@ -13,7 +13,6 @@
  */
 package com.github.cmake.maven.project.maven.plugin;
 
-import com.github.cmake.maven.project.common.Mojos;
 import org.apache.maven.execution.MavenSession;
 import org.apache.maven.plugin.BuildPluginManager;
 import org.apache.maven.plugin.MojoExecutionException;
