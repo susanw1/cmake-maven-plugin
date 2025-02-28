@@ -1,6 +1,6 @@
 package com.github.cmake.maven.project;
 
-import com.github.cmake.maven.project.common.Platform;
+import io.github.cmakemavenplugin.cmake.common.Platform;
 import org.junit.jupiter.api.Test;
 
 import java.util.HashMap;

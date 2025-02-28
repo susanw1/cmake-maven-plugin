@@ -1,4 +1,4 @@
-package com.github.cmake.maven.project.common;
+package io.github.cmakemavenplugin.cmake.common;
 
 import com.github.cowwoc.pouch.core.ConcurrentLazyReference;
 import com.github.cowwoc.pouch.core.Reference;

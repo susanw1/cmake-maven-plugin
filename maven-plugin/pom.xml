@@ -3,7 +3,7 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
-		<groupId>com.github.cmake-maven-plugin</groupId>
+		<groupId>io.github.cmake-maven-plugin</groupId>
 		<artifactId>cmake</artifactId>
 		<version>3.31.5-b2-SNAPSHOT</version>
 	</parent>
@@ -13,12 +13,6 @@
 	<artifactId>cmake-maven-plugin</artifactId>
 	<packaging>maven-plugin</packaging>
 	<description>Builds or tests native code</description>
-
-	<distributionManagement>
-		<relocation>
-			<groupId>io.github.cmake-maven-plugin</groupId>
-		</relocation>
-	</distributionManagement>
 
 	<properties>
 		<cmake.shipsWithPlatform>false</cmake.shipsWithPlatform>
@@ -98,7 +92,7 @@
 		</dependency>
 		<dependency>
 			<groupId>com.github.cowwoc.pouch</groupId>
-			<artifactId>core</artifactId>
+			<artifactId>pouch-core</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>${project.groupId}</groupId>

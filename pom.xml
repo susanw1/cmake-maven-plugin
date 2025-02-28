@@ -3,7 +3,7 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-	<groupId>com.github.cmake-maven-plugin</groupId>
+	<groupId>io.github.cmake-maven-plugin</groupId>
 	<artifactId>cmake</artifactId>
 	<version>3.31.5-b2-SNAPSHOT</version>
 	<packaging>pom</packaging>
@@ -39,9 +39,6 @@
 	</developers>
 
 	<distributionManagement>
-		<relocation>
-			<groupId>io.github.cmake-maven-plugin</groupId>
-		</relocation>
 		<snapshotRepository>
 			<id>maven-central-snapshots</id>
 			<url>https://oss.sonatype.org/content/repositories/snapshots</url>
@@ -61,7 +58,7 @@
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<maven.version>3.9.6</maven.version>
+		<maven.version>3.9.9</maven.version>
 		<maven.compiler.source>1.8</maven.compiler.source>
 		<maven.compiler.target>1.8</maven.compiler.target>
 
@@ -106,7 +103,7 @@
 			</dependency>
 			<dependency>
 				<groupId>com.github.cowwoc.pouch</groupId>
-				<artifactId>core</artifactId>
+				<artifactId>pouch-core</artifactId>
 				<version>8.1</version>
 			</dependency>
 			<dependency>
@@ -134,6 +131,25 @@
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-compiler-plugin</artifactId>
 					<version>3.13.0</version>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-toolchains-plugin</artifactId>
+					<version>3.2.0</version>
+					<executions>
+						<execution>
+							<goals>
+								<goal>toolchain</goal>
+							</goals>
+						</execution>
+					</executions>
+					<configuration>
+						<toolchains>
+							<jdk>
+								<version>1.8</version>
+							</jdk>
+						</toolchains>
+					</configuration>
 				</plugin>
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>

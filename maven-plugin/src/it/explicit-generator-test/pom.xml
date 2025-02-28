@@ -4,7 +4,7 @@
     https://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
-	<groupId>com.github.cmake-maven-plugin</groupId>
+	<groupId>io.github.cmake-maven-plugin</groupId>
 	<artifactId>hello-world-test</artifactId>
 	<version>0.0.1</version>
 	<packaging>jar</packaging>

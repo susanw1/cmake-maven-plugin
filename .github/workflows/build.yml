@@ -88,13 +88,13 @@ jobs:
 
                 mkdir /opt/jdk/
                 cd /opt/jdk
-                wget https://cdn.azul.com/zulu-embedded/bin/zulu8.78.0.19-ca-jdk8.0.412-linux_aarch32hf.tar.gz
-                tar -xzvf zulu8.78.0.19-ca-jdk8.0.412-linux_aarch32hf.tar.gz
+                wget https://cdn.azul.com/zulu-embedded/bin/zulu8.84.0.15-ca-jdk8.0.442-linux_aarch32hf.tar.gz
+                tar -xzvf zulu8.84.0.15-ca-jdk8.0.442-linux_aarch32hf.tar.gz
             
-                update-alternatives --install /usr/bin/java java /opt/jdk/zulu8.78.0.19-ca-jdk8.0.412-linux_aarch32hf/bin/java 181
-                update-alternatives --install /usr/bin/javac javac /opt/jdk/zulu8.78.0.19-ca-jdk8.0.412-linux_aarch32hf/bin/javac 181
+                update-alternatives --install /usr/bin/java java /opt/jdk/zulu8.84.0.15-ca-jdk8.0.442-linux_aarch32hf/bin/java 181
+                update-alternatives --install /usr/bin/javac javac /opt/jdk/zulu8.84.0.15-ca-jdk8.0.442-linux_aarch32hf/bin/javac 181
             
-                rm zulu8.78.0.19-ca-jdk8.0.412-linux_aarch32hf.tar.gz
+                rm zulu8.84.0.15-ca-jdk8.0.442-linux_aarch32hf.tar.gz
                 ;;
               aarch64)
                 apt-get install gnupg ca-certificates curl -y

@@ -3,23 +3,17 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
-		<groupId>com.github.cmake-maven-plugin</groupId>
+		<groupId>io.github.cmake-maven-plugin</groupId>
 		<artifactId>cmake</artifactId>
 		<version>3.31.5-b2-SNAPSHOT</version>
 	</parent>
 	<artifactId>cmake-common</artifactId>
 	<description>Code that is used by multiple modules</description>
 
-	<distributionManagement>
-		<relocation>
-			<groupId>io.github.cmake-maven-plugin</groupId>
-		</relocation>
-	</distributionManagement>
-
 	<dependencies>
 		<dependency>
 			<groupId>com.github.cowwoc.pouch</groupId>
-			<artifactId>core</artifactId>
+			<artifactId>pouch-core</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.commons</groupId>

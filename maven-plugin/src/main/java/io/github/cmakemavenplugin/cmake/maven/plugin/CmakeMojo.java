@@ -1,6 +1,6 @@
-package com.github.cmake.maven.project.maven.plugin;
+package io.github.cmakemavenplugin.cmake.maven.plugin;
 
-import com.github.cmake.maven.project.common.Platform;
+import io.github.cmakemavenplugin.cmake.common.Platform;
 import org.apache.maven.execution.MavenSession;
 import org.apache.maven.model.Plugin;
 import org.apache.maven.plugin.AbstractMojo;

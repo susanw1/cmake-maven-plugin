@@ -1,8 +1,8 @@
-package com.github.cmake.maven.project.binaries.plugin;
+package io.github.cmakemavenplugin.cmake.binaries.plugin;
 
-import com.github.cmake.maven.project.common.Platform;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableSet;
+import io.github.cmakemavenplugin.cmake.common.Platform;
 import org.apache.commons.compress.archivers.ArchiveEntry;
 import org.apache.commons.compress.archivers.ArchiveException;
 import org.apache.commons.compress.archivers.ArchiveInputStream;
