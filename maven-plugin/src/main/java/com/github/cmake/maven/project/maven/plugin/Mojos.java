@@ -1,4 +1,4 @@
-package com.github.cmake.maven.project.common;
+package com.github.cmake.maven.project.maven.plugin;
 
 import org.apache.maven.execution.MavenSession;
 import org.apache.maven.plugin.MojoExecution;

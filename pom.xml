@@ -5,10 +5,10 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.github.cmake-maven-plugin</groupId>
 	<artifactId>cmake</artifactId>
-	<version>3.31.5-b1-SNAPSHOT</version>
+	<version>3.31.5-b2-SNAPSHOT</version>
 	<packaging>pom</packaging>
 	<name>CMake</name>
-	<description>Builds native code using the CMake makefile generator</description>
+	<description>Builds or tests native code using the CMake build system</description>
 
 	<url>https://github.com/cmake-maven-plugin/cmake-maven-plugin</url>
 	<licenses>
@@ -40,7 +40,7 @@
 
 	<distributionManagement>
 		<relocation>
-			<groupId>com.github.cmake-maven-plugin</groupId>
+			<groupId>io.github.cmake-maven-plugin</groupId>
 		</relocation>
 		<snapshotRepository>
 			<id>maven-central-snapshots</id>

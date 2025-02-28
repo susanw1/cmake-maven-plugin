@@ -5,15 +5,20 @@
 	<parent>
 		<groupId>com.github.cmake-maven-plugin</groupId>
 		<artifactId>cmake</artifactId>
-		<version>3.31.5-b1-SNAPSHOT</version>
+		<version>3.31.5-b2-SNAPSHOT</version>
 	</parent>
 	<prerequisites>
 		<maven>${maven.version}</maven>
 	</prerequisites>
 	<artifactId>cmake-maven-plugin</artifactId>
 	<packaging>maven-plugin</packaging>
-	<name>CMake Maven Plugin</name>
-	<description>Builds native code using CMake makefile generator</description>
+	<description>Builds or tests native code</description>
+
+	<distributionManagement>
+		<relocation>
+			<groupId>io.github.cmake-maven-plugin</groupId>
+		</relocation>
+	</distributionManagement>
 
 	<properties>
 		<cmake.shipsWithPlatform>false</cmake.shipsWithPlatform>
