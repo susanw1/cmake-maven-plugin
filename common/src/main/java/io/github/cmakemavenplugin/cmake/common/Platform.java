@@ -46,11 +46,21 @@ public final class Platform
 	}
 
 	/**
-	 * @return {@code true} if cmake binaries ship with the platform
+	 * Determines if the platform ships with the cmake binaries.
+	 *
+	 * @return {@code true} if the platform ships with the binaries
 	 */
-	public boolean shipsWithPlatform()
+	public boolean shipsWithBinaries()
 	{
-		return architecture == Architecture.ARM_32;
+		switch (architecture)
+		{
+			case X86_32:
+			case X86_64:
+			case AARCH_64:
+				return true;
+			default:
+				return false;
+		}
 	}
 
 	/**
@@ -64,17 +74,9 @@ public final class Platform
 	}
 
 	/**
-	 * @return {@code true} if automated tests can run on this platform
-	 */
-	public boolean canRunTests()
-	{
-		return architecture != Architecture.ARM_64;
-	}
-
-	/**
 	 * Returns the classifier associated with this platform.
 	 *
-	 * @return the classifier associated with this platform
+	 * @return the classifier
 	 * @throws UnsupportedOperationException if <a href="https://cmake.org/download/">CMake's website</a>
 	 *                                       does not provide binaries for this platform
 	 */
@@ -84,12 +86,12 @@ public final class Platform
 		{
 			case LINUX:
 				return "linux-" + architecture.name().toLowerCase(Locale.ENGLISH);
-			case MAC:
+			case OSX:
 				switch (architecture)
 				{
 					case X86_64:
 					case ARM_32:
-					case ARM_64:
+					case AARCH_64:
 						return "mac-universal";
 					default:
 						throw new UnsupportedOperationException("Unsupported platform: " + getName());
@@ -99,8 +101,8 @@ public final class Platform
 				{
 					case X86_64:
 						return "windows-x86_64";
-					case ARM_64:
-						return "windows-arm_64";
+					case AARCH_64:
+						return "windows-aarch_64";
 					default:
 						throw new UnsupportedOperationException("Unsupported platform: " + getName());
 				}
@@ -171,7 +173,7 @@ public final class Platform
 		switch (operatingSystem)
 		{
 			case LINUX:
-			case MAC:
+			case OSX:
 			case FREEBSD:
 				return "";
 			case WINDOWS:
@@ -197,19 +199,19 @@ public final class Platform
 				{
 					case X86_64:
 						return "linux-x86_64.tar.gz";
-					case ARM_64:
+					case AARCH_64:
 						return "linux-aarch64.tar.gz";
 					case ARM_32:
-						// cmake is assumed to ship with the operating system
+						// cmake is assumed to ship with the platform
 					default:
 						throw new UnsupportedOperationException("Unsupported platform: " + getName());
 				}
-			case MAC:
+			case OSX:
 				switch (architecture)
 				{
 					case X86_64:
 					case ARM_32:
-					case ARM_64:
+					case AARCH_64:
 						return "macos-universal.tar.gz";
 					default:
 						throw new UnsupportedOperationException("Unsupported platform: " + getName());
@@ -225,7 +227,7 @@ public final class Platform
 				{
 					case X86_64:
 						return "windows-x86_64.zip";
-					case ARM_64:
+					case AARCH_64:
 						return "windows-arm64.zip";
 					default:
 						throw new UnsupportedOperationException("Unsupported platform: " + getName());
@@ -236,10 +238,10 @@ public final class Platform
 	}
 
 	/**
-	 * Indicates if the operating system supports POSIX attributes.
+	 * Indicates if the platform supports POSIX attributes.
 	 *
 	 * @param in the InputStream associated with the archive
-	 * @return true if the operating system supports POSIX attributes
+	 * @return true if the platform supports POSIX attributes
 	 * @throws UnsupportedOperationException if <a href="https://cmake.org/download/">CMake's website</a>
 	 *                                       does not provide binaries for this platform
 	 */
@@ -248,7 +250,7 @@ public final class Platform
 		switch (operatingSystem)
 		{
 			case LINUX:
-			case MAC:
+			case OSX:
 			case FREEBSD:
 				return in instanceof ArchiveInputStream;
 			case WINDOWS:
@@ -322,7 +324,7 @@ public final class Platform
 	}
 
 	/**
-	 * The architecture of an operating system.
+	 * The architecture of a platform.
 	 * <p>
 	 * Naming convention based on <a href="https://github.com/trustin/os-maven-plugin">os-maven-plugin</a>.
 	 */
@@ -343,14 +345,8 @@ public final class Platform
 		/**
 		 * ARM, 64-bit.
 		 */
-		ARM_64;
+		AARCH_64;
 
-		/**
-		 * Detects the platform's architecture.
-		 *
-		 * @return the detected architecture
-		 * @throws IllegalArgumentException if no match was found
-		 */
 		private static final Reference<Architecture> DETECTED = ConcurrentLazyReference.create(() ->
 		{
 			String osArch = System.getProperty("os.arch").toLowerCase(Locale.ENGLISH).replaceAll("[^a-z0-9]+", "");
@@ -375,16 +371,17 @@ public final class Platform
 				case "arm32":
 					return ARM_32;
 				case "aarch64":
-					return ARM_64;
+					return AARCH_64;
 				default:
-					throw new IllegalArgumentException("Unsupported architecture: " + osArch);
+					throw new AssertionError("Unsupported architecture: " + osArch);
 			}
 		});
 
 		/**
-		 * Returns the architecture of the detected operating system.
+		 * Detects and returns the current architecture.
 		 *
-		 * @return the architecture of the detected operating system
+		 * @return the architecture
+		 * @throws AssertionError if no match was found
 		 */
 		public static Architecture detected()
 		{
@@ -393,7 +390,9 @@ public final class Platform
 	}
 
 	/**
-	 * Operating systems.
+	 * The operating system of a platform.
+	 * <p>
+	 * Naming convention based on <a href="https://github.com/trustin/os-maven-plugin">os-maven-plugin</a>.
 	 */
 	public enum OperatingSystem
 	{
@@ -419,7 +418,7 @@ public final class Platform
 		/**
 		 * macOS.
 		 */
-		MAC,
+		OSX,
 		/**
 		 * FreeBSD.
 		 */
@@ -433,17 +432,17 @@ public final class Platform
 			if (startsWithIgnoreCase(name, "Linux"))
 				return LINUX;
 			if (startsWithIgnoreCase(name, "Mac"))
-				return MAC;
+				return OSX;
 			if (startsWithIgnoreCase(name, "FreeBSD"))
 				return FREEBSD;
-			throw new IllegalArgumentException("Unsupported operating system: " + name);
+			throw new AssertionError("Unsupported operating system: " + name);
 		});
 
 		/**
-		 * Returns the detected operating system.
+		 * Detects and returns the current operating system.
 		 *
-		 * @return the detected operating system
-		 * @throws IllegalArgumentException if no match was found
+		 * @return the operating system
+		 * @throws AssertionError if no match was found
 		 */
 		public static OperatingSystem detected()
 		{

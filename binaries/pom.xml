@@ -41,6 +41,7 @@
 						<goals>
 							<goal>jar</goal>
 						</goals>
+						<phase>${cmake.binaries.phase}</phase>
 						<configuration>
 							<classifier>${cmake.platform}</classifier>
 							<classesDirectory>${project.build.directory}/dependency/cmake</classesDirectory>

@@ -13,6 +13,7 @@ migrated to GitHub (and Git) after Google Code shut down.
 ### Generate Goal
 
 ```xml
+
 <plugin>
   <groupId>io.github.cmake-maven-plugin</groupId>
   <artifactId>cmake-maven-plugin</artifactId>
@@ -41,7 +42,7 @@ migrated to GitHub (and Git) after Google Code shut down.
           <!--
           Optional: Additional environment variables to expose to cmake. If a variable was already set,
           overrides the previous value.             
-          -->              
+          -->
           <key>value</key>
         </environmentVariables>
         <options>
@@ -60,6 +61,7 @@ migrated to GitHub (and Git) after Google Code shut down.
 ### Compile Goal
 
 ```xml
+
 <plugin>
   <groupId>io.github.cmake-maven-plugin</groupId>
   <artifactId>cmake-maven-plugin</artifactId>
@@ -92,6 +94,7 @@ migrated to GitHub (and Git) after Google Code shut down.
 ### Test Goal
 
 ```xml
+
 <plugin>
   <groupId>io.github.cmake-maven-plugin</groupId>
   <artifactId>cmake-maven-plugin</artifactId>
@@ -140,12 +143,12 @@ To clean an old build, run:
 By default, Maven will activate the right profile based on your JVM:
 
 * windows-x86_64
-* windows-arm_64
+* windows-aarch_64
 * linux-x86_64
 * linux-arm_32
-* linux-arm_64
+* linux-aarch_64
 * mac-x86_64
-* mac-arm_64
+* mac-aarch_64
 
 If detection does not work, or you wish to override it then set `-Dos.name=<value>` and `-Dos.arch=<value>`.
 
@@ -159,7 +162,8 @@ Sometimes it is preferable or necessary to use a preexisting CMake installation.
 binaries for some platforms, such as Raspberry Pi. In such cases, users can install the binaries themselves
 (typically using package managers like `apt-get`) and point the plugin at them.
 
-1. Set `${cmake.download}` to `false`.
+1. Set `${cmake.download}` to `false`. This property defaults to `true` on platforms that are supported
+   by [CMake downloads](https://cmake.org/download/) and `false` otherwise.
 2. Optionally set `${cmake.dir}` to the directory containing the binaries (e.g. `/usr/bin`). Otherwise, the
    plugin will expect the binaries to be on the PATH.
 
@@ -167,4 +171,6 @@ That's it! To learn more about CMake itself, consult the [CMake.org](https://cma
 
 ### License
 
-CMake-Maven-Plugin is released under an [Apache License 2.0](https://www.apache.org/licenses/LICENSE-2.0)
+* This library is distributed under the terms of
+  the [Apache License 2.0](https://www.apache.org/licenses/LICENSE-2.0)
+* See [Third party licenses](LICENSE-3RD-PARTY.md) for the licenses of dependencies

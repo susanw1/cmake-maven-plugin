@@ -1,0 +1,178 @@
+name: Build
+on:
+  workflow_call:
+    inputs:
+      COMMIT_ID:
+        required: true
+        type: string
+      FOR_RELEASE:
+        required: true
+        type: boolean
+
+jobs:
+  build:
+    name: Build (${{ matrix.runtime }})
+    strategy:
+      fail-fast: true
+      matrix:
+        runtime: [ linux-x64, linux-aarch64, osx-x64, win-x64 ]
+        include:
+          - runtime: linux-x64
+            os: ubuntu-latest
+
+          - runtime: linux-aarch64
+            os: ubuntu-24.04-arm
+
+          - runtime: osx-x64
+            os: macOS-latest
+
+          - runtime: win-x64
+            os: windows-latest
+    runs-on: ${{ matrix.os }}
+    steps:
+      - name: Checkout source code
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.COMMIT_ID }}
+
+      - name: Install Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: zulu
+          java-version: 8
+
+      - name: Cache Dependencies
+        uses: actions/cache@v4
+        with:
+          # Avoid caching the generated artifacts
+          path: |
+            ~/.m2/repository/*
+            !~/.m2/repository/io/github/cmake-maven-plugin
+          key: "${{ matrix.runtime }}-maven-${{ hashFiles('**/pom.xml') }}"
+
+      # Maven command-line options:
+      # --batch-mode: recommended in CI to inform maven to not run in interactive mode (less logs)
+      # -V: strongly recommended in CI, will display the JDK and Maven versions in use.
+      # -Dsurefire.useFile=false: useful in CI. Displays test errors in the logs directly (instead of
+      #                           having to crawl the workspace files to see the cause).
+      # -e: Display stack-traces on failure
+      # -P release: activate the "release" profile
+      #
+      # We need to use the "install" phase before running integration tests; otherwise,
+      # maven-invoker-plugin:install will fail.
+      - name: Build
+        shell: bash
+        run: |
+          PROFILE=""          
+          if [[ "${{ inputs.FOR_RELEASE }}" == "true" ]]; then
+            PROFILE="-P release"
+          fi
+          ./mvnw install --batch-mode -V "-Dsurefire.useFile=false" -e ${PROFILE}
+
+      - uses: actions/upload-artifact@v4
+        if: ${{ inputs.FOR_RELEASE }}
+        with:
+          name: ${{ matrix.runtime }}-bundle
+          path: |
+            ~/.m2/repository/io/github/cmake-maven-plugin/
+            !~/.m2/repository/io/github/cmake-maven-plugin/**/maven-metadata-local.xml
+            !~/.m2/repository/io/github/cmake-maven-plugin/**/_remote.repositories
+            !~/.m2/repository/io/github/cmake-maven-plugin/**/*.lastUpdated
+          if-no-files-found: error
+          retention-days: 1
+
+  build-arm:
+    runs-on: ubuntu-latest
+    name: Build (${{ matrix.arch }}-${{ matrix.distro }})
+    strategy:
+      fail-fast: true
+      matrix:
+        include:
+          - arch: armv6
+            distro: bullseye
+          - arch: armv7
+            distro: ubuntu_latest
+
+    steps:
+      - name: Checkout source code
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.COMMIT_ID }}
+
+      - name: Cache Dependencies
+        uses: actions/cache@v4
+        with:
+          # Avoid caching the generated artifacts
+          path: |
+            ~/.m2/repository/*
+            !~/.m2/repository/io/github/cmake-maven-plugin
+          key: "${{ matrix.arch }}-maven-${{ hashFiles('**/pom.xml') }}"
+
+      - name: Build
+        uses: uraimo/run-on-arch-action@v3
+        with:
+          arch: ${{ matrix.arch }}
+          distro: ${{ matrix.distro }}
+          githubToken: ${{ github.token }}
+          install: |
+            apt-get update -y
+
+            case "${{ matrix.arch }}" in
+              armv6|armv7)
+                apt-get install wget cmake -y
+
+                mkdir /opt/jdk/
+                cd /opt/jdk
+                wget https://cdn.azul.com/zulu-embedded/bin/zulu8.84.0.15-ca-jdk8.0.442-linux_aarch32hf.tar.gz
+                tar -xzvf zulu8.84.0.15-ca-jdk8.0.442-linux_aarch32hf.tar.gz
+
+                update-alternatives --install /usr/bin/java java /opt/jdk/zulu8.84.0.15-ca-jdk8.0.442-linux_aarch32hf/bin/java 181
+                update-alternatives --install /usr/bin/javac javac /opt/jdk/zulu8.84.0.15-ca-jdk8.0.442-linux_aarch32hf/bin/javac 181
+
+                rm zulu8.84.0.15-ca-jdk8.0.442-linux_aarch32hf.tar.gz
+                ;;
+              *)
+                echo "Unsupported architecture: ${{ matrix.arch }}"
+                exit 1
+                ;;
+            esac
+            apt-get install build-essential gnupg ca-certificates coreutils -y
+          setup: mkdir -p "~/.m2"
+          dockerRunArgs: >
+            --env GITHUB_WORKSPACE="${GITHUB_WORKSPACE}"
+            --volume "~/.m2:/root/.m2"
+          run: |
+            export JAVA_HOME=`which java | xargs readlink -f | xargs dirname | xargs dirname`
+            cat <<EOF > ~/.m2/toolchains.xml
+            <?xml version="1.0" encoding="UTF8"?>
+            <toolchains>
+              <toolchain>
+                <type>jdk</type>
+                <provides>
+                  <version>8</version>
+                  <vendor>temurin</vendor>
+                </provides>
+                <configuration>
+                  <jdkHome>${JAVA_HOME}</jdkHome>
+                </configuration>
+              </toolchain>
+            </toolchains>
+            EOF
+
+            PROFILE=""
+            if [[ "${{ inputs.FOR_RELEASE }}" == "true" ]]; then
+              PROFILE="-P release"
+            fi
+            ./mvnw install --batch-mode -V "-Dsurefire.useFile=false" -e ${PROFILE}
+
+      - uses: actions/upload-artifact@v4
+        if: ${{ inputs.FOR_RELEASE }}
+        with:
+          name: linux-${{ matrix.arch }}-bundle
+          path: |
+            ~/.m2/repository/io/github/cmake-maven-plugin/
+            !~/.m2/repository/io/github/cmake-maven-plugin/**/maven-metadata-local.xml
+            !~/.m2/repository/io/github/cmake-maven-plugin/**/_remote.repositories
+            !~/.m2/repository/io/github/cmake-maven-plugin/**/*.lastUpdated
+          if-no-files-found: error
+          retention-days: 1

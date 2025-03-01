@@ -69,13 +69,14 @@
 			 * Example: linux-x86_64
 			 * Download binaries, run tests
 		2. Binaries provided by https://cmake.org/download/, Platform not supported by GitHub-hosted runners
-			 * Example: windows-arm_64
+			 * Example: windows-aarch_64
 			 * Download binaries, skip tests
 		3. Binaries not provided by https://cmake.org/download/, Platform not supported by GitHub-hosted runners
 			 * Example: BSD variants
 			 * Don't download binaries or run tests
 		-->
-		<cmake.shipsWithPlatform>true</cmake.shipsWithPlatform>
+		<cmake.shipsWithPlatform>false</cmake.shipsWithPlatform>
+		<cmake.binaries.phase>package</cmake.binaries.phase>
 		<skipTests>false</skipTests>
 	</properties>
 
@@ -130,26 +131,12 @@
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-compiler-plugin</artifactId>
-					<version>3.13.0</version>
+					<version>3.14.0</version>
 				</plugin>
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-toolchains-plugin</artifactId>
 					<version>3.2.0</version>
-					<executions>
-						<execution>
-							<goals>
-								<goal>toolchain</goal>
-							</goals>
-						</execution>
-					</executions>
-					<configuration>
-						<toolchains>
-							<jdk>
-								<version>8</version>
-							</jdk>
-						</toolchains>
-					</configuration>
 				</plugin>
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
@@ -159,22 +146,22 @@
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-plugin-plugin</artifactId>
-					<version>3.13.0</version>
+					<version>3.15.1</version>
 				</plugin>
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-dependency-plugin</artifactId>
-					<version>3.7.1</version>
+					<version>3.8.1</version>
 				</plugin>
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-clean-plugin</artifactId>
-					<version>3.4.0</version>
+					<version>3.4.1</version>
 				</plugin>
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-install-plugin</artifactId>
-					<version>3.1.2</version>
+					<version>3.1.4</version>
 				</plugin>
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
@@ -194,39 +181,22 @@
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-invoker-plugin</artifactId>
-					<version>3.7.0</version>
+					<version>3.9.0</version>
 				</plugin>
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-surefire-plugin</artifactId>
-					<version>3.3.1</version>
-				</plugin>
-				<plugin>
-					<artifactId>maven-javadoc-plugin</artifactId>
-					<version>3.8.0</version>
+					<version>3.5.2</version>
 				</plugin>
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
-					<artifactId>maven-gpg-plugin</artifactId>
-					<!-- WORKAROUND: https://issues.apache.org/jira/browse/MGPG-136 -->
-					<version>3.1.0</version>
-					<executions>
-						<execution>
-							<id>sign-artifacts</id>
-							<phase>verify</phase>
-							<goals>
-								<goal>sign</goal>
-							</goals>
-							<configuration>
-								<!--								<bestPractices>true</bestPractices>-->
-							</configuration>
-						</execution>
-					</executions>
+					<artifactId>maven-javadoc-plugin</artifactId>
+					<version>3.11.2</version>
 				</plugin>
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-deploy-plugin</artifactId>
-					<version>3.1.2</version>
+					<version>3.1.4</version>
 					<configuration>
 						<deployAtEnd>true</deployAtEnd>
 						<altReleaseDeploymentRepository>
@@ -263,6 +233,11 @@
 						</ruleSet>
 					</configuration>
 				</plugin>
+				<plugin>
+					<groupId>org.codehaus.mojo</groupId>
+					<artifactId>license-maven-plugin</artifactId>
+					<version>2.5.0</version>
+				</plugin>
 			</plugins>
 		</pluginManagement>
 
@@ -283,6 +258,60 @@
 									<version>${maven.version}</version>
 								</requireMavenVersion>
 							</rules>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-toolchains-plugin</artifactId>
+				<executions>
+					<execution>
+						<goals>
+							<goal>toolchain</goal>
+						</goals>
+					</execution>
+				</executions>
+				<configuration>
+					<toolchains>
+						<jdk>
+							<version>8</version>
+						</jdk>
+					</toolchains>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>license-maven-plugin</artifactId>
+				<inherited>false</inherited>
+				<executions>
+					<execution>
+						<id>3rd-party-licenses</id>
+						<goals>
+							<goal>aggregate-add-third-party</goal>
+						</goals>
+						<phase>process-sources</phase>
+						<configuration>
+							<outputDirectory>${project.basedir}</outputDirectory>
+							<thirdPartyFilename>LICENSE-3RD-PARTY.md</thirdPartyFilename>
+							<fileTemplate>${basedir}/licenses/format.ftl</fileTemplate>
+							<missingFile>${basedir}/licenses/missing.txt</missingFile>
+							<licenseMerges>
+								<licenseMerge>Apache License, Version 2.0|Apache 2.0|Apache-2.0|
+									Apache License, Version 2.0, GNU Lesser General Public License|
+									The Apache Software License, Version 2.0
+								</licenseMerge>
+								<licenseMerge>Eclipse Public License (EPL), Version 1.0|Eclipse Public License - v 1.0|Eclipse
+									Public License - v 1.0, GNU Lesser General Public License|Eclipse Public License, Version
+									1.0
+								</licenseMerge>
+								<licenseMerge>MIT License|The MIT License</licenseMerge>
+								<licenseMerge>GNU Lesser General Public License (LGPL)|GNU Lesser General Public License
+								</licenseMerge>
+								<licenseMerge>Common Development And Distribution License (CDDL) + GPL, version 2.0, with
+									classpath exception|CDDL + GPLv2 with classpath exception
+								</licenseMerge>
+							</licenseMerges>
 						</configuration>
 					</execution>
 				</executions>
@@ -313,7 +342,7 @@
 			</properties>
 		</profile>
 		<profile>
-			<id>windows-arm_64</id>
+			<id>windows-aarch_64</id>
 			<activation>
 				<os>
 					<family>windows</family>
@@ -321,7 +350,7 @@
 				</os>
 			</activation>
 			<properties>
-				<cmake.platform>windows-arm_64</cmake.platform>
+				<cmake.platform>windows-aarch_64</cmake.platform>
 				<skipTests>true</skipTests>
 			</properties>
 		</profile>
@@ -349,10 +378,11 @@
 			<properties>
 				<cmake.platform>linux-arm_32</cmake.platform>
 				<cmake.shipsWithPlatform>true</cmake.shipsWithPlatform>
+				<cmake.binaries.phase>none</cmake.binaries.phase>
 			</properties>
 		</profile>
 		<profile>
-			<id>linux-arm_64</id>
+			<id>linux-aarch_64</id>
 			<activation>
 				<os>
 					<family>unix</family>
@@ -360,7 +390,7 @@
 				</os>
 			</activation>
 			<properties>
-				<cmake.platform>linux-arm_64</cmake.platform>
+				<cmake.platform>linux-aarch_64</cmake.platform>
 				<skipTests>true</skipTests>
 			</properties>
 		</profile>
@@ -377,7 +407,7 @@
 			</properties>
 		</profile>
 		<profile>
-			<id>mac-arm_64</id>
+			<id>mac-aarch_64</id>
 			<activation>
 				<os>
 					<family>mac</family>
@@ -412,19 +442,6 @@
 								<id>attach-javadocs</id>
 								<goals>
 									<goal>jar</goal>
-								</goals>
-							</execution>
-						</executions>
-					</plugin>
-					<plugin>
-						<groupId>org.apache.maven.plugins</groupId>
-						<artifactId>maven-gpg-plugin</artifactId>
-						<executions>
-							<execution>
-								<id>sign-artifacts</id>
-								<phase>verify</phase>
-								<goals>
-									<goal>sign</goal>
 								</goals>
 							</execution>
 						</executions>

@@ -29,7 +29,7 @@
 			</properties>
 		</profile>
 		<profile>
-			<id>windows-arm_64</id>
+			<id>windows-aarch_64</id>
 			<activation>
 				<os>
 					<family>windows</family>
@@ -81,7 +81,7 @@
 			</properties>
 		</profile>
 		<profile>
-			<id>mac-arm_64</id>
+			<id>mac-aarch_64</id>
 			<activation>
 				<os>
 					<family>mac</family>
@@ -130,6 +130,20 @@
 						<configuration>
 							<buildDirectory>${project.build.directory}</buildDirectory>
 						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-jar-plugin</artifactId>
+				<version>3.4.2</version>
+				<executions>
+					<execution>
+						<id>default-jar</id>
+						<goals>
+							<goal>jar</goal>
+						</goals>
+						<phase>none</phase>
 					</execution>
 				</executions>
 			</plugin>
