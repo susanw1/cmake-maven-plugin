@@ -112,12 +112,9 @@ jobs:
       # Concurrent deploys of the files that are common across platforms may lead to data corruption
       max-parallel: 1
       matrix:
-        runtime: [ linux-arm64, win-arm64, linux-x64, osx-x64, win-x64 ]
+        runtime: [ linux-x64, osx-x64, win-x64, linux-arm64, win-arm64 ]
         include:
           - runtime: linux-x64
-            os: ubuntu-latest
-
-          - runtime: linux-arm64
             os: ubuntu-latest
 
           - runtime: osx-x64
@@ -125,6 +122,9 @@ jobs:
 
           - runtime: win-x64
             os: windows-latest
+
+          - runtime: linux-arm64
+            os: ubuntu-latest
 
           - runtime: win-arm64
             os: windows-latest
@@ -153,17 +153,17 @@ jobs:
           key: "${{ runner.OS }}-maven-${{ hashFiles('**/pom.xml') }}"
 
       - name: Add platform-specific options
+        if: ${{ matrix.runtime == 'linux-arm64' }}
+        run: >
+          echo "MAVEN_OPTS=-Dos.family=unix -Dos.arch=aarch64 -Dinvoker.skip=true" >> "${GITHUB_ENV}"
+
+      - name: Add platform-specific options
         if: ${{ matrix.runtime == 'win-arm64' }}
         # We need to quote -D arguments if the argument name contains a dot, due to this Powershell bug:
         # https://github.com/PowerShell/PowerShell/issues/6291
         run: >
           echo "MAVEN_OPTS=`-Dos.family=windows` `-Dos.arch=aarch64` -Dinvoker.skip=true" | Out-File 
           -FilePath "$env:GITHUB_ENV" -Append
-
-      - name: Add platform-specific options
-        if: ${{ matrix.runtime == 'linux-arm64' }}
-        run: >
-          echo "MAVEN_OPTS=-Dos.family=unix -Dos.arch=aarch64 -Dinvoker.skip=true" >> "${GITHUB_ENV}"
 
       # Need to install artifacts locally in order to run integration tests
       - name: Test build
