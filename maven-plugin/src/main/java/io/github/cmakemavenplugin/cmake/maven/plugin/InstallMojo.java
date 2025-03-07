@@ -45,7 +45,7 @@ public class InstallMojo extends CmakeMojo
 	 * Enables verbose mode.
 	 */
 	@Parameter(defaultValue = "false")
-	private String verbose;
+	private boolean verbose;
 
 	/**
 	 * The project binary directory to be built.
@@ -89,6 +89,8 @@ public class InstallMojo extends CmakeMojo
 			Collections.addAll(processBuilder.command(), "--install", projectDirectory.getPath());
 			if (config != null)
 				Collections.addAll(processBuilder.command(), "--config", config);
+			if (verbose)
+				processBuilder.command().add("--verbose");
 			addOptions(processBuilder);
 
 			Log log = getLog();
