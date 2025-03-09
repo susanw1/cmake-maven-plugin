@@ -45,6 +45,9 @@
 						<configuration>
 							<sourcePath>${project.basedir}</sourcePath>
 							<targetPath>${project.build.directory}</targetPath>
+							<options>
+								<option>-DCMAKE_INSTALL_PREFIX=${project.build.directory}</option>
+							</options>
 						</configuration>
 					</execution>
 					<execution>
@@ -74,6 +77,7 @@
 						<configuration>
 							<projectDirectory>${project.build.directory}</projectDirectory>
 							<verbose>true</verbose>
+							<config>Debug</config>
 						</configuration>
 					</execution>
 				</executions>
